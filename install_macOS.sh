@@ -170,7 +170,8 @@ touch /usr/local/etc/nginx/conf.d/php-fpm
 echo "${PHPFPM}" >> /usr/local/etc/nginx/conf.d/php-fpm
 
 echo
-echo "Tworzę domyślny host..."
+echo "Tworzę domyślny 
+..."
 NGINXDEFAULT=$(cat <<EOF
 server {
     listen       80;
@@ -225,7 +226,7 @@ echo "${XDEBUG}" >> /usr/local/etc/php/7.0/php.ini
 echo
 echo "Ustawiam strefę czasową dla php..."
 #setup php.ini files
-sed -i -e "s/;date.timezone =/date.timezone = Europe\/Warsaw/" /usr/local/etc/php/7.0/php.ini
+sed -i -e "s/;date.timezone =/date.timezone = Europe/Warsaw/" /usr/local/etc/php/7.0/php.ini
 
 
 echo
