@@ -280,6 +280,9 @@ alias mysql.start="launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.
 alias mysql.stop="launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist"
 alias mysql.restart='mysql.stop && mysql.start'
 alias phpunit='./vendor/bin/phpunit'
+alias sf='php app/console'
+alias sf:start='php app/console server:start 0.0.0.0:8080'
+alias sf:stop='php app/console server:stop 0.0.0.0:8080'
 EOF
 )
 echo "${BASH_ALIASES}" >> ~/.bash_profile
