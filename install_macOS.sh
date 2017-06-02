@@ -48,10 +48,10 @@ sudo launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist
 echo
 echo "Instaluję php 7.0..."
 # install php 7.0
-brew install --without-mssql --without-httpd22 --without-httpd24 php70
+brew install --without-mssql --without-httpd22 --without-httpd24 php71
 mkdir -p ~/Library/LaunchAgents
-ln -sfv /usr/local/opt/php70/homebrew.mxcl.php70.plist ~/Library/LaunchAgents/
-launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.php70.plist
+ln -sfv /usr/local/opt/php71/homebrew.mxcl.php71.plist ~/Library/LaunchAgents/
+launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.php71.plist
 
 echo
 echo "Instaluję MySQL 5.7..."
@@ -170,8 +170,7 @@ touch /usr/local/etc/nginx/conf.d/php-fpm
 echo "${PHPFPM}" >> /usr/local/etc/nginx/conf.d/php-fpm
 
 echo
-echo "Tworzę domyślny 
-..."
+echo "Tworzę domyślny host..."
 NGINXDEFAULT=$(cat <<EOF
 server {
     listen       80;
@@ -210,7 +209,7 @@ echo
 echo "Instaluję xdebug..."
 #install xdebug
 
-brew install php70-xdebug
+brew install php71-xdebug
 XDEBUG=$(cat <<EOF
 [xdebug]
 xdebug.remote_enable=1
@@ -221,20 +220,20 @@ xdebug.remote_autostart=0
 xdebug.remote_connect_back=0
 EOF
 )
-echo "${XDEBUG}" >> /usr/local/etc/php/7.0/php.ini
+sudo echo "${XDEBUG}" >> /usr/local/etc/php/7.1/php.ini
 
 echo
 echo "Ustawiam strefę czasową dla php..."
 #setup php.ini files
-sed -i -e "s/;date.timezone =/date.timezone = Europe/Warsaw/" /usr/local/etc/php/7.0/php.ini
+sudo sed -i -e "s/;date.timezone =/date.timezone = Europe\/Warsaw/" /usr/local/etc/php/7.1/php.ini
 
 
 echo
 echo "Instaluję Composera..."
 # install Composer
 cd /tmp
-curl -s https://getcomposer.org/installer | php
-mv composer.phar /usr/local/bin/composer
+sudo curl -s https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
 
 echo
 echo "Instaluję Symfony..."
@@ -257,8 +256,8 @@ sudo launchctl load /Library/LaunchDaemons/homebrew.mxcl.nginx.plist
 echo
 echo "Restart php-fpm..."
 # restart php-fpm
-launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.php70.plist
-launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.php70.plist
+launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.php71.plist
+launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.php71.plist
 
 echo
 echo "Zmieniam hasło root dla MySQL na coderslab..."
@@ -274,12 +273,13 @@ BASH_ALIASES=$(cat <<EOF
 alias nginx.start='sudo launchctl load /Library/LaunchDaemons/homebrew.mxcl.nginx.plist'
 alias nginx.stop='sudo launchctl unload /Library/LaunchDaemons/homebrew.mxcl.nginx.plist'
 alias nginx.restart='nginx.stop && nginx.start'
-alias php-fpm.start="launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.php70.plist"
-alias php-fpm.stop="launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.php70.plist"
+alias php-fpm.start="launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.php71.plist"
+alias php-fpm.stop="launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.php71.plist"
 alias php-fpm.restart='php-fpm.stop && php-fpm.start'
 alias mysql.start="launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist"
 alias mysql.stop="launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist"
 alias mysql.restart='mysql.stop && mysql.start'
+alias phpunit='./vendor/bin/phpunit'
 EOF
 )
 echo "${BASH_ALIASES}" >> ~/.bash_profile
