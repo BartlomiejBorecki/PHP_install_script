@@ -46,8 +46,8 @@ sudo apachectl stop
 sudo launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist
 
 echo
-echo "Instaluję php 7.0..."
-# install php 7.0
+echo "Instaluję php 7.1..."
+# install php 7.1
 brew install --without-mssql --without-httpd22 --without-httpd24 php71
 mkdir -p ~/Library/LaunchAgents
 ln -sfv /usr/local/opt/php71/homebrew.mxcl.php71.plist ~/Library/LaunchAgents/
@@ -156,11 +156,15 @@ echo "${NGINXCONF}" >> /usr/local/etc/nginx/nginx.conf
 echo
 echo "Dodaję konfigurację php-fpm..."
 PHPFPM=$(cat <<EOF
-location ~ \.php$ {
-    try_files      \$uri = 404;
+location ~ [^/]\.php(/|\$) {
+    fastcgi_split_path_info ^(.+?\.php)(/.*)\$;
+    if (!-f \$document_root\$fastcgi_script_name) {
+        return 404;
+    }
     fastcgi_pass   127.0.0.1:9000;
     fastcgi_index  index.php;
     fastcgi_param  SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+    fastcgi_param  PATH_INFO \$fastcgi_path_info;
     include        fastcgi_params;
 }
 EOF
@@ -261,7 +265,7 @@ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.php71.plist
 
 echo
 echo "Zmieniam hasło root dla MySQL na coderslab..."
-mysqladmin -u root password coderslab
+mysqladmin -u root password root
 
 echo
 echo "Tworzę skróty do sterowania nginx, php-fpm oraz mysql..."
@@ -279,15 +283,9 @@ alias php-fpm.restart='php-fpm.stop && php-fpm.start'
 alias mysql.start="launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist"
 alias mysql.stop="launchctl unload -w ~/Library/LaunchAgents/homebrew.mxcl.mysql.plist"
 alias mysql.restart='mysql.stop && mysql.start'
-alias phpunit='./vendor/bin/phpunit'
-alias sf='php app/console'
-alias sf:start='php app/console server:start 0.0.0.0:8080'
-alias sf:stop='php app/console server:stop 0.0.0.0:8080'
 EOF
 )
 echo "${BASH_ALIASES}" >> ~/.bash_profile
-
-brew cask install netbeans-php
 
 echo "#############################"
 echo "####INSTALACJA ZAKOŃCZONA####"
